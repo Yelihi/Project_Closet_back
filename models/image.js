@@ -1,21 +1,26 @@
-module.exports = (sequelize, DataTypes) => {
-  const Image = sequelize.define(
-    "Image",
-    {
-      src: {
-        type: DataTypes.STRING(200),
-        allowNull: false,
-      },
-    },
-    {
-      // 유저 모델에 대한 셋팅
-      charset: "utf8",
-      collate: "utf8_general_ci", // 한글 저장
-    }
-  );
-  Image.associate = (db) => {
-    db.Image.belongsTo(db.Cloth);
-  };
+const DataTypes = require("sequelize");
+const { Model } = DataTypes;
 
-  return Image;
+module.exports = class Image extends Model {
+  static init(sequelize) {
+    return super.init(
+      {
+        src: {
+          type: DataTypes.STRING(200),
+          allowNull: false,
+        },
+      },
+      {
+        // 유저 모델에 대한 셋팅
+        modelName: "Image",
+        tableName: "images",
+        charset: "utf8",
+        collate: "utf8_general_ci",
+        sequelize,
+      }
+    );
+  }
+  static associate(db) {
+    db.Image.belongsTo(db.Cloth);
+  }
 };

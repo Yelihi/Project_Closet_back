@@ -1,9 +1,19 @@
 const express = require("express");
-const userRouter = require("./routes/user");
 const cors = require("cors");
+const dotenv = require("dotenv");
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
+
+const userRouter = require("./routes/user");
 const db = require("./models");
 
+const passport = require("passport");
+const passportConfig = require("./passport");
+
 const app = express();
+
+dotenv.config();
+passportConfig();
 
 db.sequelize
   .sync()
@@ -15,10 +25,23 @@ db.sequelize
 app.use(
   cors({
     origin: true,
+    credentials: true,
   })
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(
+  session({
+    saveUninitialized: false,
+    resave: false,
+    secret: process.env.COOKIE_SECRET,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/user", userRouter);
 

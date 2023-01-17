@@ -1,24 +1,33 @@
 const Sequelize = require("sequelize");
+const user = require("./user");
+const cloth = require("./cloth");
+const image = require("./image");
+const muffler = require("./muffler");
+const outer = require("./outer");
+const pant = require("./pant");
+const shirt = require("./shirt");
+const shoes = require("./shoes");
+const top = require("./top");
+
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
 const db = {};
 
-const sequelize = new Sequelize(
-  config.database,
-  config.username,
-  config.password,
-  config
-);
+const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
-db.User = require("./user")(sequelize, Sequelize);
-db.Cloth = require("./cloth")(sequelize, Sequelize);
-db.Outer = require("./outer")(sequelize, Sequelize);
-db.Shirt = require("./shirt")(sequelize, Sequelize);
-db.Top = require("./top")(sequelize, Sequelize);
-db.Pant = require("./pant")(sequelize, Sequelize);
-db.Shoes = require("./shoes")(sequelize, Sequelize);
-db.Muffler = require("./muffler")(sequelize, Sequelize);
-db.Image = require("./image")(sequelize, Sequelize);
+db.User = user;
+db.Cloth = cloth;
+db.Image = image;
+db.Outer = outer;
+db.Shirt = shirt;
+db.Pant = pant;
+db.Top = top;
+db.Shoes = shoes;
+db.Muffler = muffler;
+
+Object.keys(db).forEach((modelName) => {
+  db[modelName].init(sequelize);
+});
 
 // associtate 부분을 실행시켜주는 부분
 Object.keys(db).forEach((modelName) => {
