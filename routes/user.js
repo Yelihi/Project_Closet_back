@@ -76,12 +76,12 @@ router.post("/create", isNotLoggedIn, async (req, res, next) => {
     if (exNickName) {
       return res.status(403).send("이미 사용중인 닉네임 입니다.");
     }
-    // if (req.body.password.length < 8) {
-    //   return res.status(403).send("비밀번호는 8자리 이상이여야 합니다.");
-    // }
-    // if (!emailRegExp.test(req.body.email)) {
-    //   return res.status(403).send("이메일 양식에 맞게 작성해주세요");
-    // }
+    if (req.body.password.length < 8) {
+      return res.status(403).send("비밀번호는 8자리 이상이여야 합니다.");
+    }
+    if (!emailRegExp.test(req.body.email)) {
+      return res.status(403).send("이메일 양식에 맞게 작성해주세요");
+    }
     const hashedPassword = await bcrypt.hash(req.body.password, 13);
     await User.create({
       email: req.body.email,
