@@ -23,6 +23,14 @@ module.exports = class User extends Model {
           type: DataTypes.STRING(200),
           allowNull: false,
         },
+        snsId: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        provider: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
       },
       {
         // 유저 모델에 대한 셋팅

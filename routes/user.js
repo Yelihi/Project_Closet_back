@@ -11,6 +11,7 @@ router.get("/", async (req, res, next) => {
   // GET /user
   try {
     if (req.user) {
+      console.log(req.user);
       const fullUserWithoutPassword = await User.findOne({
         where: { id: req.user.id },
         attributes: {
@@ -69,6 +70,7 @@ router.post("/logout", isLoggedIn, async (req, res, next) => {
       return next(err);
     }
     req.session.destroy();
+    // res.clearCookie();
     res.send("로그아웃 되었습니다.");
   });
 });

@@ -5,6 +5,7 @@ const session = require("express-session");
 const cookieParser = require("cookie-parser");
 
 const userRouter = require("./routes/user");
+const googleRouter = require("./routes/auth");
 const db = require("./models");
 
 const passport = require("passport");
@@ -44,6 +45,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/user", userRouter);
+app.use("/auth", googleRouter);
 
 app.listen(3065, () => {
   console.log("서버 실행 중!");
