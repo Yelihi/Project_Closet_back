@@ -20,6 +20,14 @@ module.exports = class Muffler extends Model {
       }
     );
   }
+
+  static postMufflerbyReq = async (req) => {
+    const result = await this.create({
+      totalLength: req.body.totalLength,
+    });
+    return result;
+  };
+
   static associate(db) {
     db.Muffler.belongsTo(db.Cloth);
   }

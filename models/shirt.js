@@ -32,6 +32,17 @@ module.exports = class Shirt extends Model {
       }
     );
   }
+
+  static postShirtbyReq = async (req) => {
+    const result = await this.create({
+      shoulder: req.body.shoulder,
+      arm: req.body.arm,
+      totalLength: req.body.totalLength,
+      chest: req.body.chest,
+    });
+    return result;
+  };
+
   static associate(db) {
     db.Shirt.belongsTo(db.Cloth);
   }

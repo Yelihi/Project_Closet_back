@@ -36,6 +36,18 @@ module.exports = class Pant extends Model {
       }
     );
   }
+
+  static postPantbyReq = async (req) => {
+    const result = await this.create({
+      totalLength: req.body.totalLength,
+      rise: req.body.rise,
+      hem: req.body.hem,
+      waist: req.body.waist,
+      thigh: req.body.thigh,
+    });
+    return result;
+  };
+
   static associate(db) {
     db.Pant.belongsTo(db.Cloth);
   }

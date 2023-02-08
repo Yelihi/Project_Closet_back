@@ -3,8 +3,13 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const morgan = require("morgan");
+const path = require("path");
+const hpp = require("hpp");
+const helmet = require("helmet");
 
 const userRouter = require("./routes/user");
+const postRouter = require("./routes/post");
 const googleRouter = require("./routes/auth");
 const db = require("./models");
 
@@ -15,6 +20,14 @@ const app = express();
 
 dotenv.config();
 passportConfig();
+
+if (process.env.NODE_ENV === "production") {
+  app.use(morgan("combined")); // 배포
+  app.use(hpp());
+  app.use(helmet());
+} else {
+  app.use(morgan("dev")); // 개발
+}
 
 db.sequelize
   .sync()
@@ -29,6 +42,9 @@ app.use(
     credentials: true,
   })
 );
+
+app.use("/", express.static(path.join(__dirname, "uploads")));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -49,6 +65,7 @@ app.use(passport.session());
 
 app.use("/user", userRouter);
 app.use("/auth", googleRouter);
+app.use("/post", postRouter);
 
 app.listen(3065, () => {
   console.log("서버 실행 중!");

@@ -20,6 +20,14 @@ module.exports = class Shoes extends Model {
       }
     );
   }
+
+  static postShoesbyReq = async (req) => {
+    const result = await this.create({
+      size: req.body.size,
+    });
+    return result;
+  };
+
   static associate(db) {
     db.Shoes.belongsTo(db.Cloth);
   }
