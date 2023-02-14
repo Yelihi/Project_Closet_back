@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const path = require("path");
 const hpp = require("hpp");
 const helmet = require("helmet");
+const fs = require("fs");
 
 const userRouter = require("./routes/user");
 const postRouter = require("./routes/post");
@@ -15,6 +16,8 @@ const db = require("./models");
 
 const passport = require("passport");
 const passportConfig = require("./passport");
+
+// const vision = require("@google-cloud/vision");
 
 const app = express();
 
@@ -66,6 +69,28 @@ app.use(passport.session());
 app.use("/user", userRouter);
 app.use("/auth", googleRouter);
 app.use("/post", postRouter);
+
+// const client = new vision.ImageAnnotatorClient({
+//   keyFilename: "APIKEY.json",
+// });
+
+// const filename = "./uploads/이력서프로필사진2.jpeg";
+
+// async function detectObject(filename) {
+//   const request = {
+//     image: { content: fs.readFileSync(filename) },
+//   };
+//   const [result] = await client.objectLocalization(request);
+//   const objects = result.localizedObjectAnnotations;
+//   const response = [];
+//   objects.forEach((object) => {
+//     let obj = { name: object.name, confidence: object.score };
+//     response.push(obj);
+//   });
+//   console.log(response);
+// }
+
+// detectObject(filename);
 
 app.listen(3065, () => {
   console.log("서버 실행 중!");

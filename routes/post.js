@@ -2,11 +2,16 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const vision = require("@google-cloud/vision");
 const { isLoggedIn } = require("./middlewares");
 
 const { Cloth, Image, Muffler, Outer, Pant, Shirt, Shoes, Top } = require("../models");
 
 const router = express.Router();
+
+const client = new vision.ImageAnnotatorClient({
+  keyFilename: "APIKEY.json",
+});
 
 try {
   fs.accessSync("uploads");
@@ -32,7 +37,27 @@ const upload = multer({
 
 router.post("/images", isLoggedIn, upload.array("image"), async (req, res, next) => {
   // POST /post/images
-  res.json(req.files.map((v) => v.filename));
+  try {
+    const filename = `../uploads/${req.files[0].filename}`;
+    const request = {
+      image: { content: fs.readFileSync(filename) },
+    };
+    const [result] = await client.objectLocalization(request);
+    const objects = result.localizedObjectAnnotations;
+    const resArray = [];
+    objects.forEach((object) => {
+      let obj = { name: object.name, confidence: object.score };
+      resArray.push(obj);
+    });
+    const resultObject = {
+      filename: req.files.map((v) => v.filename),
+      visionSearch: resArray,
+    };
+    res.status(200).json(resultObject);
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
 });
 
 router.post("/clothes", isLoggedIn, upload.none(), async (req, res, next) => {
