@@ -38,7 +38,7 @@ const upload = multer({
 router.post("/images", isLoggedIn, upload.array("image"), async (req, res, next) => {
   // POST /post/images
   try {
-    const filename = `../uploads/${req.files[0].filename}`;
+    const filename = path.resolve(__dirname, `../uploads/${req.files[0].filename}`);
     const request = {
       image: { content: fs.readFileSync(filename) },
     };

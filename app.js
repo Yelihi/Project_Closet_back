@@ -47,6 +47,7 @@ app.use(
 );
 
 app.use("/", express.static(path.join(__dirname, "uploads")));
+console.log(path.join(__dirname, "upload"));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
