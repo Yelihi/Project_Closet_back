@@ -35,10 +35,11 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 }, // 20mb
 });
 
-router.post("/images", isLoggedIn, upload.array("image"), async (req, res, next) => {
-  // POST /post/images
+router.post("/images", isLoggedIn, upload.single("image"), async (req, res, next) => {
+  // POST /post/images 파일 한개씩 업로드
+  console.log(req.file);
   try {
-    const filename = path.resolve(__dirname, `../uploads/${req.files[0].filename}`);
+    const filename = path.resolve(__dirname, `../uploads/${req.file.filename}`);
     const request = {
       image: { content: fs.readFileSync(filename) },
     };
@@ -50,7 +51,7 @@ router.post("/images", isLoggedIn, upload.array("image"), async (req, res, next)
       resArray.push(obj);
     });
     const resultObject = {
-      filename: req.files.map((v) => v.filename),
+      filename: req.file.filename,
       visionSearch: resArray,
     };
     res.status(200).json(resultObject);
