@@ -67,42 +67,42 @@ router.post("/clothes", isLoggedIn, upload.none(), async (req, res, next) => {
     const cloth = await Cloth.postClothbyReq(req);
     if (req.body.image) {
       if (Array.isArray(req.body.image)) {
-        const images = await Promise.all(req.body.image.map((image) => Image.create({ src: image })));
+        const images = await Promise.all(req.body.image.map((image) => Image.create({ src: image.filename })));
         await cloth.addImages(images);
       } else {
-        const image = await Image.create({ src: req.body.image });
+        const image = await Image.create({ src: req.body.image[0].filename });
         await cloth.addImages(image);
       }
     }
     switch (req.body.categori) {
       case "Top": {
         const top = await Top.postTopbyReq(req);
-        await cloth.addTop(top);
+        await cloth.setTop(top);
         break;
       }
       case "Outer": {
         const outer = await Outer.postOuterbyReq(req);
-        await cloth.addOuter(outer);
+        await cloth.setOuter(outer);
         break;
       }
       case "Shirt": {
         const shirt = await Shirt.postShirtbyReq(req);
-        await cloth.addShirt(shirt);
+        await cloth.setShirt(shirt);
         break;
       }
       case "Pant": {
         const pant = await Pant.postPantbyReq(req);
-        await cloth.addPant(pant);
+        await cloth.setPant(pant);
         break;
       }
       case "Shoes": {
         const shoes = await Shoes.postShoesbyReq(req);
-        await cloth.addShoes(shoes);
+        await cloth.setShoe(shoes);
         break;
       }
       case "Muffler": {
         const muffler = await Muffler.postMufflerbyReq(req);
-        await cloth.addMuffler(muffler);
+        await cloth.setMuffler(muffler);
         break;
       }
     }

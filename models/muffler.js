@@ -23,7 +23,7 @@ module.exports = class Muffler extends Model {
 
   static postMufflerbyReq = async (req) => {
     const result = await this.create({
-      totalLength: req.body.totalLength,
+      totalLength: req.body.categoriItem.totalLength,
     });
     return result;
   };

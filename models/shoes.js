@@ -12,7 +12,7 @@ module.exports = class Shoes extends Model {
       },
       {
         // 유저 모델에 대한 셋팅
-        modelName: "Shoes",
+        modelName: "Shoe",
         tableName: "shoes",
         charset: "utf8",
         collate: "utf8_general_ci",
@@ -23,7 +23,7 @@ module.exports = class Shoes extends Model {
 
   static postShoesbyReq = async (req) => {
     const result = await this.create({
-      size: req.body.size,
+      size: req.body.categoriItem.size,
     });
     return result;
   };

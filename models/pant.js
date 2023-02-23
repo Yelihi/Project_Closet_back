@@ -39,11 +39,11 @@ module.exports = class Pant extends Model {
 
   static postPantbyReq = async (req) => {
     const result = await this.create({
-      totalLength: req.body.totalLength,
-      rise: req.body.rise,
-      hem: req.body.hem,
-      waist: req.body.waist,
-      thigh: req.body.thigh,
+      totalLength: req.body.categoriItem.totalLength,
+      rise: req.body.categoriItem.rise,
+      hem: req.body.categoriItem.hem,
+      waist: req.body.categoriItem.waist,
+      thigh: req.body.categoriItem.thigh,
     });
     return result;
   };

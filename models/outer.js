@@ -35,10 +35,10 @@ module.exports = class Outer extends Model {
 
   static postOuterbyReq = async (req) => {
     const result = await this.create({
-      shoulder: req.body.shoulder,
-      arm: req.body.arm,
-      totalLength: req.body.totalLength,
-      chest: req.body.chest,
+      shoulder: req.body.categoriItem.shoulder,
+      arm: req.body.categoriItem.arm,
+      totalLength: req.body.categoriItem.totalLength,
+      chest: req.body.categoriItem.chest,
     });
     return result;
   };
