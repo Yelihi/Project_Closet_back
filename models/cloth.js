@@ -62,7 +62,7 @@ module.exports = class Cloth extends Model {
     db.Cloth.hasOne(db.Shirt);
     db.Cloth.hasOne(db.Top);
     db.Cloth.hasOne(db.Pant);
-    db.Cloth.hasOne(db.Shoes);
+    db.Cloth.hasOne(db.Shoe);
     db.Cloth.hasOne(db.Muffler);
   }
 };

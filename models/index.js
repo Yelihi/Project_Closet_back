@@ -6,7 +6,7 @@ const muffler = require("./muffler");
 const outer = require("./outer");
 const pant = require("./pant");
 const shirt = require("./shirt");
-const shoes = require("./shoes");
+const shoe = require("./shoe");
 const top = require("./top");
 
 const env = process.env.NODE_ENV || "development";
@@ -22,7 +22,7 @@ db.Outer = outer;
 db.Shirt = shirt;
 db.Pant = pant;
 db.Top = top;
-db.Shoes = shoes;
+db.Shoe = shoe;
 db.Muffler = muffler;
 
 Object.keys(db).forEach((modelName) => {

@@ -1,7 +1,7 @@
 const DataTypes = require("sequelize");
 const { Model } = DataTypes;
 
-module.exports = class Shoes extends Model {
+module.exports = class Shoe extends Model {
   static init(sequelize) {
     return super.init(
       {
@@ -29,6 +29,6 @@ module.exports = class Shoes extends Model {
   };
 
   static associate(db) {
-    db.Shoes.belongsTo(db.Cloth);
+    db.Shoe.belongsTo(db.Cloth);
   }
 };

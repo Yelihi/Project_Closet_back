@@ -5,7 +5,7 @@ const fs = require("fs");
 const vision = require("@google-cloud/vision");
 const { isLoggedIn } = require("./middlewares");
 
-const { Cloth, Image, Muffler, Outer, Pant, Shirt, Shoes, Top } = require("../models");
+const { User, Cloth, Image, Muffler, Outer, Pant, Shirt, Shoe, Top } = require("../models");
 
 const router = express.Router();
 
@@ -96,8 +96,8 @@ router.post("/clothes", isLoggedIn, upload.none(), async (req, res, next) => {
         break;
       }
       case "Shoes": {
-        const shoes = await Shoes.postShoesbyReq(req);
-        await cloth.setShoe(shoes);
+        const shoe = await Shoe.postShoesbyReq(req);
+        await cloth.setShoe(shoe);
         break;
       }
       case "Muffler": {
@@ -106,10 +106,29 @@ router.post("/clothes", isLoggedIn, upload.none(), async (req, res, next) => {
         break;
       }
     }
-    res.status(200).send("데이터가 잘 들어갔습니다.");
+    const reverseId = await Cloth.findOne({
+      where: { id: cloth.id },
+    });
+    res.status(200).json(reverseId);
   } catch (err) {
     console.error(err);
     next(err);
+  }
+});
+
+router.get("/clothes/:clothId", isLoggedIn, async (req, res, next) => {
+  try {
+    const cloth = await Cloth.findOne({
+      where: { id: req.params.clothId },
+      include: [Outer, Top, Pant, Shirt, Shoe, Muffler, Image],
+    });
+    if (!cloth) {
+      return res.status(403).send("의류가 존재하지 않습니다.");
+    }
+    res.status(200).json(cloth);
+  } catch (error) {
+    console.error(error);
+    next(error);
   }
 });
 
