@@ -35,6 +35,33 @@ const upload = multer({
   limits: { fileSize: 20 * 1024 * 1024 }, // 20mb
 });
 
+const getCatagori = {
+  Top: async function (cloth, req) {
+    const top = await Top.postTopbyReq(req);
+    await cloth.setTop(top);
+  },
+  Outer: async function (cloth, req) {
+    const outer = await Outer.postTopbyReq(req);
+    await cloth.setOuter(outer);
+  },
+  Shirt: async function (cloth, req) {
+    const shirt = await Shirt.postShirtbyReq(req);
+    await cloth.setShirt(shirt);
+  },
+  Pant: async function (cloth, req) {
+    const pant = await Pant.postPantbyReq(req);
+    await cloth.setPant(pant);
+  },
+  Shoes: async function (cloth, req) {
+    const shoe = await Shoe.postShoesbyReq(req);
+    await cloth.setShoe(shoe);
+  },
+  Muffler: async function (cloth, req) {
+    const muffler = await Muffler.postMufflerbyReq(req);
+    await cloth.setMuffler(muffler);
+  },
+};
+
 router.post("/images", isLoggedIn, upload.single("image"), async (req, res, next) => {
   // POST /post/images 파일 한개씩 업로드
   console.log(req.file);
@@ -74,38 +101,7 @@ router.post("/clothes", isLoggedIn, upload.none(), async (req, res, next) => {
         await cloth.addImages(image);
       }
     }
-    switch (req.body.categori) {
-      case "Top": {
-        const top = await Top.postTopbyReq(req);
-        await cloth.setTop(top);
-        break;
-      }
-      case "Outer": {
-        const outer = await Outer.postOuterbyReq(req);
-        await cloth.setOuter(outer);
-        break;
-      }
-      case "Shirt": {
-        const shirt = await Shirt.postShirtbyReq(req);
-        await cloth.setShirt(shirt);
-        break;
-      }
-      case "Pant": {
-        const pant = await Pant.postPantbyReq(req);
-        await cloth.setPant(pant);
-        break;
-      }
-      case "Shoes": {
-        const shoe = await Shoe.postShoesbyReq(req);
-        await cloth.setShoe(shoe);
-        break;
-      }
-      case "Muffler": {
-        const muffler = await Muffler.postMufflerbyReq(req);
-        await cloth.setMuffler(muffler);
-        break;
-      }
-    }
+    getCatagori[req.body.categori](cloth, req);
     const reverseId = await Cloth.findOne({
       where: { id: cloth.id },
     });
