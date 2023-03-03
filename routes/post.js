@@ -41,7 +41,7 @@ const getCatagori = {
     await cloth.setTop(top);
   },
   Outer: async function (cloth, req) {
-    const outer = await Outer.postTopbyReq(req);
+    const outer = await Outer.postOuterbyReq(req);
     await cloth.setOuter(outer);
   },
   Shirt: async function (cloth, req) {
