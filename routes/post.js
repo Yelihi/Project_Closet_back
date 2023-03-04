@@ -116,7 +116,19 @@ router.get("/clothes/:clothId", isLoggedIn, async (req, res, next) => {
   try {
     const cloth = await Cloth.findOne({
       where: { id: req.params.clothId },
-      include: [Outer, Top, Pant, Shirt, Shoe, Muffler, Image],
+      include: [
+        Outer,
+        Top,
+        Pant,
+        Shirt,
+        Shoe,
+        Muffler,
+        Image,
+        {
+          model: User,
+          attributes: ["id"],
+        },
+      ],
     });
     if (!cloth) {
       return res.status(403).send("의류가 존재하지 않습니다.");
