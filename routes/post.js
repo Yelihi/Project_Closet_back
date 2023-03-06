@@ -2,10 +2,12 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const db = require("../models");
 const vision = require("@google-cloud/vision");
 const { isLoggedIn } = require("./middlewares");
 
 const { User, Cloth, Image, Muffler, Outer, Pant, Shirt, Shoe, Top } = require("../models");
+const getCatagori = require("../core/utils");
 
 const router = express.Router();
 
@@ -34,33 +36,6 @@ const upload = multer({
   }),
   limits: { fileSize: 20 * 1024 * 1024 }, // 20mb
 });
-
-const getCatagori = {
-  Top: async function (cloth, req) {
-    const top = await Top.postTopbyReq(req);
-    await cloth.setTop(top);
-  },
-  Outer: async function (cloth, req) {
-    const outer = await Outer.postOuterbyReq(req);
-    await cloth.setOuter(outer);
-  },
-  Shirt: async function (cloth, req) {
-    const shirt = await Shirt.postShirtbyReq(req);
-    await cloth.setShirt(shirt);
-  },
-  Pant: async function (cloth, req) {
-    const pant = await Pant.postPantbyReq(req);
-    await cloth.setPant(pant);
-  },
-  Shoes: async function (cloth, req) {
-    const shoe = await Shoe.postShoesbyReq(req);
-    await cloth.setShoe(shoe);
-  },
-  Muffler: async function (cloth, req) {
-    const muffler = await Muffler.postMufflerbyReq(req);
-    await cloth.setMuffler(muffler);
-  },
-};
 
 router.post("/images", isLoggedIn, upload.single("image"), async (req, res, next) => {
   // POST /post/images 파일 한개씩 업로드
@@ -101,7 +76,7 @@ router.post("/clothes", isLoggedIn, upload.none(), async (req, res, next) => {
         await cloth.addImages(image);
       }
     }
-    getCatagori[req.body.categori](cloth, req);
+    getCatagori[req.body.categori]["post"](cloth, req);
     const reverseId = await Cloth.findOne({
       where: { id: cloth.id },
     });
@@ -109,6 +84,57 @@ router.post("/clothes", isLoggedIn, upload.none(), async (req, res, next) => {
   } catch (err) {
     console.error(err);
     next(err);
+  }
+});
+
+router.patch("/clothes/:clothId", isLoggedIn, async (req, res, next) => {
+  try {
+    const cloth = await Cloth.findOne({
+      where: req.params.clothId,
+      include: [Outer, Top, Pant, Shirt, Shoe, Muffler, Image],
+    });
+    if (!cloth) {
+      return res.status(403).send("의류가 존재하지 않습니다.");
+    }
+    await Cloth.update(
+      {
+        productName: req.body.productName,
+        description: req.body.description,
+        price: req.body.price,
+        color: req.body.color,
+        categori: req.body.categori,
+        purchaseDay: req.body.purchaseDay,
+        UserId: req.user.id,
+      },
+      {
+        where: { id: req.params.clothId },
+      }
+    );
+
+    // categori 에 따른 업데이트
+    if (req.body.categori !== cloth.categori) {
+      await db[cloth.categori].destroy({ where: { clothId: req.params.clothId } });
+      getCatagori[req.body.categori]["postWithId"](cloth, req);
+    } else if (req.body.categori === cloth.categori) {
+      getCatagori[req.body.categori]["update"](req, req.params.clothId);
+    }
+
+    // image 업데이트
+    if (req.body.image) {
+      const existingImages = await Image.findAll({ where: { clothId: req.params.clothId } });
+      const filenameArray = req.body.image.map((v) => v.filename);
+
+      const imagesToRemove = existingImages.filter((img) => !filenameArray.include(img.src));
+      await Promise.all(imagesToRemove.map((imgSrc) => Image.destroy({ where: { src: imgSrc } })));
+
+      const imagesToAdd = filenameArray.filter((img) => !existingImages.some((ei) => ei.src === img));
+      await Promise.all(imagesToAdd.map((image) => Image.create({ src: image.filename, clothId: req.params.clothId })));
+    }
+
+    res.status(200).send("데이터를 수정하였습니다");
+  } catch (error) {
+    console.error(error);
+    next(error);
   }
 });
 

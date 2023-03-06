@@ -28,6 +28,24 @@ module.exports = class Shoe extends Model {
     return result;
   };
 
+  static postShoesWithClothId = async (req, id) => {
+    await this.create({
+      size: req.body.categoriItem.size,
+      clothId: id,
+    });
+  };
+
+  static updateShoesbyReq = async (req, id) => {
+    await this.update(
+      {
+        size: req.body.categoriItem.size,
+      },
+      {
+        where: { clothId: id },
+      }
+    );
+  };
+
   static associate(db) {
     db.Shoe.belongsTo(db.Cloth);
   }

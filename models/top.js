@@ -43,6 +43,30 @@ module.exports = class Top extends Model {
     return result;
   };
 
+  static postTopWithClothId = async (req, id) => {
+    await this.create({
+      shoulder: req.body.categoriItem.shoulder,
+      arm: req.body.categoriItem.arm,
+      totalLength: req.body.categoriItem.totalLength,
+      chest: req.body.categoriItem.chest,
+      clothId: id,
+    });
+  };
+
+  static updateTopbyReq = async (req, id) => {
+    await this.update(
+      {
+        shoulder: req.body.categoriItem.shoulder,
+        arm: req.body.categoriItem.arm,
+        totalLength: req.body.categoriItem.totalLength,
+        chest: req.body.categoriItem.chest,
+      },
+      {
+        where: { clothId: id },
+      }
+    );
+  };
+
   static associate(db) {
     db.Top.belongsTo(db.Cloth);
   }

@@ -28,6 +28,24 @@ module.exports = class Muffler extends Model {
     return result;
   };
 
+  static postMufflerWithClothId = async (req, id) => {
+    await this.create({
+      totalLength: req.body.categoriItem.totalLength,
+      clothId: id,
+    });
+  };
+
+  static updateMufflerbyReq = async (req, id) => {
+    await this.update(
+      {
+        totalLength: req.body.categoriItem.totalLength,
+      },
+      {
+        where: { clothId: id },
+      }
+    );
+  };
+
   static associate(db) {
     db.Muffler.belongsTo(db.Cloth);
   }
