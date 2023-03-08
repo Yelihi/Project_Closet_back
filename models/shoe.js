@@ -23,25 +23,25 @@ module.exports = class Shoe extends Model {
 
   static postShoesbyReq = async (req) => {
     const result = await this.create({
-      size: req.body.categoriItem.size,
+      size: req.body.items.categoriItem.size,
     });
     return result;
   };
 
   static postShoesWithClothId = async (req, id) => {
     await this.create({
-      size: req.body.categoriItem.size,
-      clothId: id,
+      size: req.body.items.categoriItem.size,
+      ClothId: id,
     });
   };
 
   static updateShoesbyReq = async (req, id) => {
     await this.update(
       {
-        size: req.body.categoriItem.size,
+        size: req.body.items.categoriItem.size,
       },
       {
-        where: { clothId: id },
+        where: { ClothId: id },
       }
     );
   };

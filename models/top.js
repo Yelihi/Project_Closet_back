@@ -35,34 +35,34 @@ module.exports = class Top extends Model {
 
   static postTopbyReq = async (req) => {
     const result = await this.create({
-      shoulder: req.body.categoriItem.shoulder,
-      arm: req.body.categoriItem.arm,
-      totalLength: req.body.categoriItem.totalLength,
-      chest: req.body.categoriItem.chest,
+      shoulder: req.body.items.categoriItem.shoulder,
+      arm: req.body.items.categoriItem.arm,
+      totalLength: req.body.items.categoriItem.totalLength,
+      chest: req.body.items.categoriItem.chest,
     });
     return result;
   };
 
   static postTopWithClothId = async (req, id) => {
     await this.create({
-      shoulder: req.body.categoriItem.shoulder,
-      arm: req.body.categoriItem.arm,
-      totalLength: req.body.categoriItem.totalLength,
-      chest: req.body.categoriItem.chest,
-      clothId: id,
+      shoulder: req.body.items.categoriItem.shoulder,
+      arm: req.body.items.categoriItem.arm,
+      totalLength: req.body.items.categoriItem.totalLength,
+      chest: req.body.items.categoriItem.chest,
+      ClothId: id,
     });
   };
 
   static updateTopbyReq = async (req, id) => {
     await this.update(
       {
-        shoulder: req.body.categoriItem.shoulder,
-        arm: req.body.categoriItem.arm,
-        totalLength: req.body.categoriItem.totalLength,
-        chest: req.body.categoriItem.chest,
+        shoulder: req.body.items.categoriItem.shoulder,
+        arm: req.body.items.categoriItem.arm,
+        totalLength: req.body.items.categoriItem.totalLength,
+        chest: req.body.items.categoriItem.chest,
       },
       {
-        where: { clothId: id },
+        where: { ClothId: id },
       }
     );
   };

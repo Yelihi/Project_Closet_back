@@ -44,12 +44,12 @@ module.exports = class Cloth extends Model {
 
   static postClothbyReq = async (req) => {
     const result = await this.create({
-      productName: req.body.productName,
-      description: req.body.description,
-      price: req.body.price,
-      color: req.body.color,
-      categori: req.body.categori,
-      purchaseDay: req.body.purchaseDay,
+      productName: req.body.items.productName,
+      description: req.body.items.description,
+      price: req.body.items.price,
+      color: req.body.items.color,
+      categori: req.body.items.categori,
+      purchaseDay: req.body.items.purchaseDay,
       UserId: req.user.id,
     });
     return result;

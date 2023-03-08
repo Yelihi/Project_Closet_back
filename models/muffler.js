@@ -23,25 +23,25 @@ module.exports = class Muffler extends Model {
 
   static postMufflerbyReq = async (req) => {
     const result = await this.create({
-      totalLength: req.body.categoriItem.totalLength,
+      totalLength: req.body.items.categoriItem.totalLength,
     });
     return result;
   };
 
   static postMufflerWithClothId = async (req, id) => {
     await this.create({
-      totalLength: req.body.categoriItem.totalLength,
-      clothId: id,
+      totalLength: req.body.items.categoriItem.totalLength,
+      ClothId: id,
     });
   };
 
   static updateMufflerbyReq = async (req, id) => {
     await this.update(
       {
-        totalLength: req.body.categoriItem.totalLength,
+        totalLength: req.body.items.categoriItem.totalLength,
       },
       {
-        where: { clothId: id },
+        where: { ClothId: id },
       }
     );
   };

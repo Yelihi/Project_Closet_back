@@ -67,16 +67,16 @@ router.post("/clothes", isLoggedIn, upload.none(), async (req, res, next) => {
   // POST /post/clothes
   try {
     const cloth = await Cloth.postClothbyReq(req);
-    if (req.body.image) {
-      if (Array.isArray(req.body.image)) {
-        const images = await Promise.all(req.body.image.map((image) => Image.create({ src: image.filename })));
+    if (req.body.items.image) {
+      if (Array.isArray(req.body.itmes.image)) {
+        const images = await Promise.all(req.body.items.image.map((image) => Image.create({ src: image.filename })));
         await cloth.addImages(images);
       } else {
-        const image = await Image.create({ src: req.body.image[0].filename });
+        const image = await Image.create({ src: req.body.items.image[0].filename });
         await cloth.addImages(image);
       }
     }
-    getCatagori[req.body.categori]["post"](cloth, req);
+    getCatagori[req.body.items.categori]["post"](cloth, req);
     const reverseId = await Cloth.findOne({
       where: { id: cloth.id },
     });
@@ -90,7 +90,7 @@ router.post("/clothes", isLoggedIn, upload.none(), async (req, res, next) => {
 router.patch("/clothes/:clothId", isLoggedIn, async (req, res, next) => {
   try {
     const cloth = await Cloth.findOne({
-      where: req.params.clothId,
+      where: { id: req.params.clothId },
       include: [Outer, Top, Pant, Shirt, Shoe, Muffler, Image],
     });
     if (!cloth) {
@@ -112,23 +112,23 @@ router.patch("/clothes/:clothId", isLoggedIn, async (req, res, next) => {
     );
 
     // categori 에 따른 업데이트
-    if (req.body.categori !== cloth.categori) {
-      await db[cloth.categori].destroy({ where: { clothId: req.params.clothId } });
-      getCatagori[req.body.categori]["postWithId"](cloth, req);
-    } else if (req.body.categori === cloth.categori) {
-      getCatagori[req.body.categori]["update"](req, req.params.clothId);
+    if (req.body.items.categori !== cloth.categori) {
+      await db[cloth.categori].destroy({ where: { ClothId: req.params.clothId } });
+      getCatagori[req.body.items.categori]["postWithId"](cloth, req);
+    } else if (req.body.items.categori === cloth.categori) {
+      getCatagori[req.body.items.categori]["update"](req, req.params.clothId);
     }
 
     // image 업데이트
-    if (req.body.image) {
-      const existingImages = await Image.findAll({ where: { clothId: req.params.clothId } });
-      const filenameArray = req.body.image.map((v) => v.filename);
+    if (req.body.items.image) {
+      const existingImages = await Image.findAll({ where: { ClothId: req.params.clothId } });
+      const filenameArray = req.body.items.image.map((v) => v.filename);
 
       const imagesToRemove = existingImages.filter((img) => !filenameArray.include(img.src));
       await Promise.all(imagesToRemove.map((imgSrc) => Image.destroy({ where: { src: imgSrc } })));
 
       const imagesToAdd = filenameArray.filter((img) => !existingImages.some((ei) => ei.src === img));
-      await Promise.all(imagesToAdd.map((image) => Image.create({ src: image.filename, clothId: req.params.clothId })));
+      await Promise.all(imagesToAdd.map((image) => Image.create({ src: image.filename, ClothId: req.params.clothId })));
     }
 
     res.status(200).send("데이터를 수정하였습니다");

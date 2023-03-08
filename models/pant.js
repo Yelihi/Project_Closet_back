@@ -39,37 +39,37 @@ module.exports = class Pant extends Model {
 
   static postPantbyReq = async (req) => {
     const result = await this.create({
-      totalLength: req.body.categoriItem.totalLength,
-      rise: req.body.categoriItem.rise,
-      hem: req.body.categoriItem.hem,
-      waist: req.body.categoriItem.waist,
-      thigh: req.body.categoriItem.thigh,
+      totalLength: req.body.items.categoriItem.totalLength,
+      rise: req.body.items.categoriItem.rise,
+      hem: req.body.items.categoriItem.hem,
+      waist: req.body.items.categoriItem.waist,
+      thigh: req.body.items.categoriItem.thigh,
     });
     return result;
   };
 
   static postPantWithClothId = async (req, id) => {
     await this.create({
-      totalLength: req.body.categoriItem.totalLength,
-      rise: req.body.categoriItem.rise,
-      hem: req.body.categoriItem.hem,
-      waist: req.body.categoriItem.waist,
-      thigh: req.body.categoriItem.thigh,
-      clothId: id,
+      totalLength: req.body.items.categoriItem.totalLength,
+      rise: req.body.items.categoriItem.rise,
+      hem: req.body.items.categoriItem.hem,
+      waist: req.body.items.categoriItem.waist,
+      thigh: req.body.items.categoriItem.thigh,
+      ClothId: id,
     });
   };
 
   static updatePantbyReq = async (req, id) => {
     await this.update(
       {
-        totalLength: req.body.categoriItem.totalLength,
-        rise: req.body.categoriItem.rise,
-        hem: req.body.categoriItem.hem,
-        waist: req.body.categoriItem.waist,
-        thigh: req.body.categoriItem.thigh,
+        totalLength: req.body.items.categoriItem.totalLength,
+        rise: req.body.items.categoriItem.rise,
+        hem: req.body.items.categoriItem.hem,
+        waist: req.body.items.categoriItem.waist,
+        thigh: req.body.items.categoriItem.thigh,
       },
       {
-        where: { clothId: id },
+        where: { ClothId: id },
       }
     );
   };
