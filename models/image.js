@@ -9,6 +9,9 @@ module.exports = class Image extends Model {
           type: DataTypes.STRING(200),
           allowNull: false,
         },
+        visionSearch: {
+          type: DataTypes.JSON,
+        },
       },
       {
         // 유저 모델에 대한 셋팅

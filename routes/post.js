@@ -53,7 +53,7 @@ router.post("/images", isLoggedIn, upload.single("image"), async (req, res, next
       resArray.push(obj);
     });
     const resultObject = {
-      filename: req.file.filename,
+      src: req.file.filename,
       visionSearch: resArray,
     };
     res.status(200).json(resultObject);
@@ -68,8 +68,8 @@ router.post("/clothes", isLoggedIn, upload.none(), async (req, res, next) => {
   try {
     const cloth = await Cloth.postClothbyReq(req);
     if (req.body.items.image) {
-      if (Array.isArray(req.body.itmes.image)) {
-        const images = await Promise.all(req.body.items.image.map((image) => Image.create({ src: image.filename })));
+      if (Array.isArray(req.body.items.image)) {
+        const images = await Promise.all(req.body.items.image.map((image) => Image.create({ src: image.src, visionSearch: image.visionSearch })));
         await cloth.addImages(images);
       } else {
         const image = await Image.create({ src: req.body.items.image[0].filename });
@@ -98,12 +98,12 @@ router.patch("/clothes/:clothId", isLoggedIn, async (req, res, next) => {
     }
     await Cloth.update(
       {
-        productName: req.body.productName,
-        description: req.body.description,
-        price: req.body.price,
-        color: req.body.color,
-        categori: req.body.categori,
-        purchaseDay: req.body.purchaseDay,
+        productName: req.body.items.productName,
+        description: req.body.items.description,
+        price: req.body.items.price,
+        color: req.body.items.color,
+        categori: req.body.items.categori,
+        purchaseDay: req.body.items.purchaseDay,
         UserId: req.user.id,
       },
       {
@@ -122,13 +122,20 @@ router.patch("/clothes/:clothId", isLoggedIn, async (req, res, next) => {
     // image 업데이트
     if (req.body.items.image) {
       const existingImages = await Image.findAll({ where: { ClothId: req.params.clothId } });
-      const filenameArray = req.body.items.image.map((v) => v.filename);
+      console.log("existingImages", existingImages);
+      const filenameArray = req.body.items.image.map((v) => {
+        return { src: v.src, visionSearch: v.visionSearch };
+      });
+      console.log("filenameArray", filenameArray);
+      const filenameArrayKey = filenameArray.map((v) => v.src);
 
-      const imagesToRemove = existingImages.filter((img) => !filenameArray.include(img.src));
-      await Promise.all(imagesToRemove.map((imgSrc) => Image.destroy({ where: { src: imgSrc } })));
+      const imagesToRemove = existingImages.filter((img) => !filenameArrayKey.includes(img.src));
+      console.log("imageToRemove", imagesToRemove);
+      await Promise.all(imagesToRemove.map((imgSrc) => Image.destroy({ where: { src: imgSrc.dataValues.src } })));
 
-      const imagesToAdd = filenameArray.filter((img) => !existingImages.some((ei) => ei.src === img));
-      await Promise.all(imagesToAdd.map((image) => Image.create({ src: image.filename, ClothId: req.params.clothId })));
+      const imagesToAdd = filenameArray.filter((img) => !existingImages.some((ei) => ei.dataValues.src === img.src));
+      console.log("imagesToAdd", imagesToAdd);
+      await Promise.all(imagesToAdd.map((image) => Image.create({ src: image.src, visionSearch: image.visionSearch, ClothId: req.params.clothId })));
     }
 
     res.status(200).send("데이터를 수정하였습니다");
