@@ -173,4 +173,17 @@ router.get("/clothes/:clothId", isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.delete("/clothes/:clothId", isLoggedIn, async (req, res, next) => {
+  try {
+    const cloth = await Cloth.findOne({
+      where: { id: req.params.clothId },
+    });
+    await cloth.destroy();
+    res.status(200).send(`${req.params.clothId}를 삭제했습니다.`);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 module.exports = router;

@@ -57,12 +57,33 @@ module.exports = class Cloth extends Model {
 
   static associate(db) {
     db.Cloth.belongsTo(db.User);
-    db.Cloth.hasMany(db.Image);
-    db.Cloth.hasOne(db.Outer);
-    db.Cloth.hasOne(db.Shirt);
-    db.Cloth.hasOne(db.Top);
-    db.Cloth.hasOne(db.Pant);
-    db.Cloth.hasOne(db.Shoe);
-    db.Cloth.hasOne(db.Muffler);
+    db.Cloth.hasMany(db.Image, {
+      onDelete: "cascade",
+      hooks: true,
+    });
+    db.Cloth.hasOne(db.Outer, {
+      onDelete: "cascade",
+      hooks: true,
+    });
+    db.Cloth.hasOne(db.Shirt, {
+      onDelete: "cascade",
+      hooks: true,
+    });
+    db.Cloth.hasOne(db.Top, {
+      onDelete: "cascade",
+      hooks: true,
+    });
+    db.Cloth.hasOne(db.Pant, {
+      onDelete: "cascade",
+      hooks: true,
+    });
+    db.Cloth.hasOne(db.Shoe, {
+      onDelete: "cascade",
+      hooks: true,
+    });
+    db.Cloth.hasOne(db.Muffler, {
+      onDelete: "cascade",
+      hooks: true,
+    });
   }
 };
