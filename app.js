@@ -12,6 +12,7 @@ const fs = require("fs");
 const userRouter = require("./routes/user");
 const postRouter = require("./routes/post");
 const googleRouter = require("./routes/auth");
+const postsRouter = require("./routes/posts");
 const db = require("./models");
 
 const passport = require("passport");
@@ -70,6 +71,7 @@ app.use(passport.session());
 app.use("/user", userRouter);
 app.use("/auth", googleRouter);
 app.use("/post", postRouter);
+app.use("/posts", postsRouter);
 
 // const client = new vision.ImageAnnotatorClient({
 //   keyFilename: "APIKEY.json",
