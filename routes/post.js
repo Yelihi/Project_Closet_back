@@ -178,8 +178,19 @@ router.delete("/clothes/:clothId", isLoggedIn, async (req, res, next) => {
     const cloth = await Cloth.findOne({
       where: { id: req.params.clothId },
     });
+    const year = cloth.dataValues.purchaseDay.getFullYear();
+    const month = cloth.dataValues.purchaseDay.getMonth();
+    const day = cloth.dataValues.purchaseDay.getDate();
+    const id = req.params.clothId;
+    const clothData = {
+      price: cloth.dataValues.price,
+      categori: cloth.dataValues.categori,
+      purchaseDay: `${year}-${month + 1}`,
+    };
+    console.log("clothData", clothData);
+    console.log("clothId", id);
     await cloth.destroy();
-    res.status(200).send(`${req.params.clothId}를 삭제했습니다.`);
+    res.status(200).json({ clothId: id, clothData: clothData });
   } catch (error) {
     console.error(error);
     next(error);
