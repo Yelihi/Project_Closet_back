@@ -59,6 +59,7 @@ router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
 
 // 처음 store 페이지 라우팅 될 때
 // 총 길이와 함꼐, 9개의 데이터를 건내주어야 한다.
+// 전체데이터
 router.get("/clothes/", isLoggedIn, async (req, res, next) => {
   try {
     const clothes = await Cloth.findAll({
