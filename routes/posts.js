@@ -17,6 +17,9 @@ const currentMonth = currentDate.getMonth();
 router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
   try {
     let where = { UserId: req.user.id };
+    if (req.query.categori) {
+      where.categori = req.query.categori;
+    }
     if (parseInt(req.query.lastId, 10)) {
       where.id = { [Op.lt]: parseInt(req.query.lastId, 10) };
     }
@@ -35,8 +38,19 @@ router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
     if (!userClothes) {
       return res.status(400).send("해당 유저의 의류가 없습니다.");
     }
-
-    res.status(200).json(userClothes);
+    if (userClothes.length > 0) {
+      let nextCursor = userClothes[userClothes.length - 1].dataValues.id;
+      let userClothesData = userClothes.map((item) => item.dataValues);
+      let userClothesWithCursor = {
+        items: userClothesData,
+        nextCursor: nextCursor,
+      };
+      if (req.query.deviceType === "desktop") {
+        return res.status(200).json(userClothes);
+      } else if (req.query.deviceType === "phone") {
+        return res.status(200).json(userClothesWithCursor);
+      }
+    }
   } catch (error) {
     console.error(error);
     next(error);
@@ -45,10 +59,10 @@ router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
 
 // 처음 store 페이지 라우팅 될 때
 // 총 길이와 함꼐, 9개의 데이터를 건내주어야 한다.
-router.get("/clothes/:id", isLoggedIn, async (req, res, next) => {
+router.get("/clothes/", isLoggedIn, async (req, res, next) => {
   try {
     const clothes = await Cloth.findAll({
-      where: { UserId: req.params.id },
+      where: { UserId: req.user.id },
       order: [["createdAt", "DESC"]],
       include: [
         {
@@ -59,7 +73,7 @@ router.get("/clothes/:id", isLoggedIn, async (req, res, next) => {
     });
     const lastClothes = await Cloth.findAll({
       where: {
-        UserId: req.params.id,
+        UserId: req.user.id,
         purchaseDay: {
           [Op.lt]: new Date(currentDate.getFullYear(), currentMonth, 1),
         },
@@ -78,7 +92,7 @@ router.get("/clothes/:id", isLoggedIn, async (req, res, next) => {
     if (!lastClothes) {
       return res.status(400).send("데이터가 존재하지 않습니다.");
     }
-    console.log("clothes", clothes[0]);
+
     let filterObj = {};
     let lastFilterObj = {};
     clothes.forEach((cloth) => {
@@ -95,9 +109,6 @@ router.get("/clothes/:id", isLoggedIn, async (req, res, next) => {
         lastFilterObj[cloth.dataValues.categori]++;
       }
     });
-    console.log("fiolterObj", filterObj);
-    let maxCategori = Object.entries(filterObj).sort((a, b) => b[1] - a[1])[0][0];
-    let lastMaxCategori = Object.entries(lastFilterObj).sort((a, b) => b[1] - a[1])[0][0];
 
     const result = {
       items: clothes.slice(0, 9), // 9개
@@ -105,10 +116,12 @@ router.get("/clothes/:id", isLoggedIn, async (req, res, next) => {
       lastTotal: lastClothes.length,
       price: clothes.reduce((acc, crr, idx) => acc + crr.price, 0),
       lastPrice: lastClothes.reduce((acc, crr, idx) => acc + crr.price, 0),
-      categori: maxCategori,
-      categoriNum: filterObj[maxCategori],
-      lastCategoriNum: lastFilterObj[lastMaxCategori],
-      idArray: clothes.map((v) => v.id),
+      categori: filterObj,
+      lastCategori: lastFilterObj,
+      standardDate: `${currentDate.getFullYear()}-${currentMonth + 1}`,
+      idArray: clothes.map((v) => {
+        return { id: v.id, categori: v.categori };
+      }),
     };
     res.status(200).json(result);
   } catch (error) {
