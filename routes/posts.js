@@ -168,6 +168,7 @@ router.get("/overview", isLoggedIn, async (req, res, next) => {
       totalPrice: totalPrice,
       currentYearPrice: currentYearPrice,
       theOldestData: oldData,
+      categori: categoriObj,
     };
     res.status(200).json(result);
   } catch (error) {
