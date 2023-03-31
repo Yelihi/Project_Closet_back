@@ -134,6 +134,7 @@ router.get("/clothes/", isLoggedIn, async (req, res, next) => {
 });
 
 // GET /posts/overview
+// test
 router.get("/overview", isLoggedIn, async (req, res, next) => {
   try {
     const allData = await Cloth.findAll({
