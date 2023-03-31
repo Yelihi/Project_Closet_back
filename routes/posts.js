@@ -8,11 +8,13 @@ const { Op } = require("sequelize");
 const { isLoggedIn } = require("./middlewares");
 
 const { User, Cloth, Image, Muffler, Outer, Pant, Shirt, Shoe, Top } = require("../models");
+const { findAll } = require("../models/user");
 
 const router = express.Router();
 
 const currentDate = new Date();
 const currentMonth = currentDate.getMonth();
+const currentYear = currentDate.getFullYear();
 
 router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
   try {
@@ -123,6 +125,49 @@ router.get("/clothes/", isLoggedIn, async (req, res, next) => {
       idArray: clothes.map((v) => {
         return { id: v.id, categori: v.categori };
       }),
+    };
+    res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.get("/overview", isLoggedIn, async (req, res, next) => {
+  try {
+    const allData = await Cloth.findAll({
+      where: { UserId: req.user.id },
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: Image,
+          attributes: ["id", "ClothId", "src"],
+        },
+      ],
+    });
+    if (!allData) return res.status(400).send("데이터가 존재하지 않습니다.");
+    let categoriObj = {};
+    allData.forEach((item) => {
+      if (categoriObj[item.dataValues.categori] === undefined) {
+        categoriObj[item.dataValues.categori] = 1;
+      } else {
+        categoriObj[item.dataValues.categori]++;
+      }
+    });
+    const copyAllData = [...allData];
+    copyAllData.sort((a, b) => b.dataValues.purchaseDay - a.dataValues.purchaseDay);
+
+    const last5Data = allData.slice(0, 5); // 최신 저장한 5개의 데이터 [{item},{item},..]
+    const totalData = allData.length; // 총 갯수
+    const totalPrice = allData.reduce((acc, crr, idx) => acc + crr.price, 0); // 원래라면 defaultValue 를 거쳐야 하는데.. 일단 해보자
+    const currentYearPrice = allData.filter((item) => new Date(`${currentYear}-01-01`) <= item.dataValues.purchaseDay).reduce((acc, crr, idx) => acc + crr.price, 0);
+    const oldData = copyAllData.pop();
+    const result = {
+      lastDatas: last5Data,
+      totalNumber: totalData,
+      totalPrice: totalPrice,
+      currentYearPrice: currentYearPrice,
+      theOldestData: oldData,
     };
     res.status(200).json(result);
   } catch (error) {
