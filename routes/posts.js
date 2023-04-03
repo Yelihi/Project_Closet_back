@@ -37,8 +37,8 @@ router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
       ],
     });
 
-    if (!userClothes) {
-      return res.status(400).send("해당 유저의 의류가 없습니다.");
+    if (userClothes.length === 0) {
+      return res.status(204).send("해당 유저의 의류가 없습니다.");
     }
     if (userClothes.length > 0) {
       let nextCursor = userClothes[userClothes.length - 1].dataValues.id;
