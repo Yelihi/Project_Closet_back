@@ -38,7 +38,7 @@ router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
     });
 
     if (userClothes.length === 0) {
-      return res.status(204).send("해당 유저의 의류가 없습니다.");
+      return res.status(200).json({ items: undefined });
     }
     if (userClothes.length > 0) {
       let nextCursor = userClothes[userClothes.length - 1].dataValues.id;
@@ -89,12 +89,6 @@ router.get("/clothes/", isLoggedIn, async (req, res, next) => {
         },
       ],
     });
-    if (!clothes) {
-      return res.status(400).send("데이터가 존재하지 않습니다.");
-    }
-    if (!lastClothes) {
-      return res.status(400).send("데이터가 존재하지 않습니다.");
-    }
 
     let filterObj = {};
     let lastFilterObj = {};
@@ -113,14 +107,17 @@ router.get("/clothes/", isLoggedIn, async (req, res, next) => {
       }
     });
 
+    let CurrentPrice = clothes.reduce((acc, crr, idx) => acc + crr.price, 0);
+    let LastPrice = lastClothes.reduce((acc, crr, idx) => acc + crr.price, 0);
+
     const result = {
       items: clothes.slice(0, 9), // 9개
       total: clothes.length, // clothes 는 전체 데이터
-      lastTotal: lastClothes.length,
-      price: clothes.reduce((acc, crr, idx) => acc + crr.price, 0),
-      lastPrice: lastClothes.reduce((acc, crr, idx) => acc + crr.price, 0),
+      lastTotal: lastClothes.length === 0 ? clothes.length : lastClothes.length,
+      price: CurrentPrice,
+      lastPrice: lastClothes.length === 0 ? CurrentPrice : LastPrice,
       categori: filterObj,
-      lastCategori: lastFilterObj,
+      lastCategori: Object.keys(lastFilterObj).length === 0 ? filterObj : lastFilterObj,
       standardDate: `${currentDate.getFullYear()}-${currentMonth + 1}`,
       idArray: clothes.map((v) => {
         return { id: v.id, categori: v.categori };
