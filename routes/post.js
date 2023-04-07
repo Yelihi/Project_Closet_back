@@ -104,6 +104,7 @@ router.patch("/clothes/:clothId", isLoggedIn, async (req, res, next) => {
         color: req.body.items.color,
         categori: req.body.items.categori,
         purchaseDay: req.body.items.purchaseDay,
+        preference: req.body.items.preference,
         UserId: req.user.id,
       },
       {

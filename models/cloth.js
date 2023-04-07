@@ -30,6 +30,10 @@ module.exports = class Cloth extends Model {
           type: DataTypes.DATE,
           allowNull: false,
         },
+        preference: {
+          type: DataTypes.FLOAT,
+          allowNull: false,
+        },
       },
       {
         // 유저 모델에 대한 셋팅
@@ -50,6 +54,7 @@ module.exports = class Cloth extends Model {
       color: req.body.items.color,
       categori: req.body.items.categori,
       purchaseDay: req.body.items.purchaseDay,
+      preference: req.body.items.preference,
       UserId: req.user.id,
     });
     return result;
