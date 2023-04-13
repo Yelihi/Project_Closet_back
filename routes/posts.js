@@ -18,6 +18,7 @@ const currentYear = currentDate.getFullYear();
 
 router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
   try {
+    console.log("/clothes/store 시작점 ---------------------------------------------");
     let where = { UserId: req.user.id };
     if (req.query.categori) {
       where.categori = req.query.categori;
@@ -36,6 +37,7 @@ router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
         },
       ],
     });
+    console.log("userClothes", userClothes);
 
     if (userClothes.length === 0) {
       return res.status(200).json({ items: undefined });
@@ -64,6 +66,7 @@ router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
 // 전체데이터
 router.get("/clothes/", isLoggedIn, async (req, res, next) => {
   try {
+    console.log("/clothes 시작점 -------------------------------------------------");
     const clothes = await Cloth.findAll({
       where: { UserId: req.user.id },
       order: [["createdAt", "DESC"]],
