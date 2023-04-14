@@ -18,7 +18,6 @@ const currentYear = currentDate.getFullYear();
 
 router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
   try {
-    console.log("/clothes/store 시작점 ---------------------------------------------");
     let where = { UserId: req.user.id };
     if (req.query.categori) {
       where.categori = req.query.categori;
@@ -37,10 +36,10 @@ router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
         },
       ],
     });
-    console.log("userClothes", userClothes);
 
     if (userClothes.length === 0) {
-      return res.status(200).json({ items: undefined });
+      const EmptyData = { items: userClothes };
+      return res.status(200).json(EmptyData);
     }
     if (userClothes.length > 0) {
       let nextCursor = userClothes[userClothes.length - 1].dataValues.id;
