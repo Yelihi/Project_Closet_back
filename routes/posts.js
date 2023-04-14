@@ -36,10 +36,10 @@ router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
         },
       ],
     });
+    console.log("userClothes", userClothes);
 
     if (userClothes.length === 0) {
-      const EmptyData = { items: userClothes };
-      return res.status(200).json(EmptyData);
+      return res.status(200).json({ items: userClothes });
     }
     if (userClothes.length > 0) {
       let nextCursor = userClothes[userClothes.length - 1].dataValues.id;
