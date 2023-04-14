@@ -65,7 +65,6 @@ router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
 // 전체데이터
 router.get("/clothes/", isLoggedIn, async (req, res, next) => {
   try {
-    console.log("/clothes 시작점 -------------------------------------------------");
     const clothes = await Cloth.findAll({
       where: { UserId: req.user.id },
       order: [["createdAt", "DESC"]],
