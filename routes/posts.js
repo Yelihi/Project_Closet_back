@@ -47,20 +47,23 @@ router.get("/clothes/store/", isLoggedIn, async (req, res, next) => {
         },
       ],
     });
-    console.log("userClothes", userClothes);
-
+    if (!userClothes)
+      return res.status(400).send("데이터에 접근하지 못하였습니다");
     if (userClothes.length === 0) {
-      return res.status(200).json({ items: userClothes });
+      return res.status(200).json({ items: [] });
     }
     if (userClothes.length > 0) {
       let nextCursor = userClothes[userClothes.length - 1].dataValues.id;
       let userClothesData = userClothes.map((item) => item.dataValues);
+      let userClothesInDesktop = {
+        items: userClothes,
+      };
       let userClothesWithCursor = {
         items: userClothesData,
         nextCursor: nextCursor,
       };
       if (req.query.deviceType === "desktop") {
-        return res.status(200).json(userClothes);
+        return res.status(200).json(userClothesInDesktop);
       } else if (req.query.deviceType === "phone") {
         return res.status(200).json(userClothesWithCursor);
       }
@@ -157,7 +160,7 @@ router.get("/overview", isLoggedIn, async (req, res, next) => {
         },
       ],
     });
-    if (!allData) return res.status(400).send("데이터가 존재하지 않습니다.");
+    if (!allData) return res.status(400).send("데이터에 접근할 수 없습니다");
     let categoriObj = {};
     allData.forEach((item) => {
       if (categoriObj[item.dataValues.categori] === undefined) {
@@ -233,6 +236,43 @@ router.get("/clothes/search/", isLoggedIn, async (req, res, next) => {
       totalNumber: totalData,
     };
     res.status(200).json(result);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// GET /posts/chart?year=
+router.get("/chart", isLoggedIn, async (req, res, next) => {
+  try {
+    const year = req.query.year ? parseInt(req.query.year, 10) : currentYear;
+    const where = {
+      UserId: req.user.id,
+      purchaseDay: {
+        [Op.between]: [new Date(`${year}`), new Date(`${year}-12`)],
+      },
+    };
+
+    const clothes = await Cloth.findAll({
+      where,
+      order: [["purchaseDay", "DESC"]],
+      include: [
+        {
+          model: Image,
+          attributes: ["id", "ClothId", "src"],
+        },
+      ],
+    });
+    if (!clothes) return res.status(200).json({ items: null, totalAmount: 0 });
+    const totalAmount = clothes.reduce(
+      (acc, crr) => (acc = acc + crr.price),
+      0
+    );
+    const results = {
+      items: clothes,
+      totalAmount: totalAmount,
+    };
+    res.status(200).json(results);
   } catch (error) {
     console.error(error);
     next(error);
